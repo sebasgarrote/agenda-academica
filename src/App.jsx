@@ -107,7 +107,7 @@ const App = () => {
             <div className="config-group">
                 <div className="slider-header">
                   <label className="config-label"><Sliders size={16} /> Atenuación del Fondo</label>
-                  <span className="slider-value-badge">{config.bgOpacity ?? 20}%</span>
+                  <span className="slider-value-badge">{Math.round(((config.bgOpacity ?? 20) / 60) * 100)}%</span>
                 </div>
                 <input 
                   type="range" 
@@ -120,7 +120,7 @@ const App = () => {
                 />
                 <div className="slider-hints">
                   <span>Nitidez Total (0%)</span>
-                  <span>Más Atenuado (60%)</span>
+                  <span>Atenuado (100%)</span>
                 </div>
             </div>
 

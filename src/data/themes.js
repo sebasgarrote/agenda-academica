@@ -17,6 +17,30 @@ export const THEMES = {
     colors: { primary: '#3b5219', secondary: '#f4f7f0' },
     backgroundImage: '/assets/backgrounds/bg-oliva-monstera.png',
   },
+  sol_montana: {
+    id: 'sol_montana',
+    name: 'Sol & Montañas',
+    colors: { primary: '#1d70b8', secondary: '#eef6fc' },
+    backgroundImage: '/assets/backgrounds/bg-sol-montana.png',
+  },
+  flores_pastel: {
+    id: 'flores_pastel',
+    name: 'Flores Pastel',
+    colors: { primary: '#d94864', secondary: '#fff5f7' },
+    backgroundImage: '/assets/backgrounds/bg-flores-pastel.png',
+  },
+  estrellas: {
+    id: 'estrellas',
+    name: 'Estrellas Beige',
+    colors: { primary: '#8c6d46', secondary: '#fdfbf7' },
+    backgroundImage: '/assets/backgrounds/bg-estrellas.png',
+  },
+  botanico_acuarela: {
+    id: 'botanico_acuarela',
+    name: 'Botánico Acuarela',
+    colors: { primary: '#2d6a4f', secondary: '#f4fbf7' },
+    backgroundImage: '/assets/backgrounds/bg-botanico-acuarela.jpg',
+  },
   celeste_hojas: {
     id: 'celeste_hojas',
     name: 'Celeste & Rosa',
@@ -34,12 +58,6 @@ export const THEMES = {
     name: 'Café & Boba',
     colors: { primary: '#5c3d2e', secondary: '#fffaf5' },
     backgroundImage: '/assets/backgrounds/bg-cafe-boba.png',
-  },
-  verde_flores: {
-    id: 'verde_flores',
-    name: 'Verde Flores',
-    colors: { primary: '#2d6a4f', secondary: '#f0fdf4' },
-    backgroundImage: '/assets/backgrounds/bg-verde-flores.png',
   },
   botanico: {
     id: 'botanico',
@@ -85,7 +103,7 @@ export const FONT_COLORS = [
   { id: 'oliva', color: '#3b5219' },
   { id: 'nude', color: '#8c6d46' },
   { id: 'verde', color: '#2d6a4f' },
-  { id: 'celeste', color: '#1e3a8a' },
+  { id: 'celeste', color: '#1d70b8' },
   { id: 'rosa', color: '#d94864' },
   { id: 'cafe', color: '#5c3d2e' },
   { id: 'monstera', color: '#2a9d8f' },
