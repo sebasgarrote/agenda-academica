@@ -6,12 +6,35 @@ import { THEMES } from '../data/themes';
 
 const MenuPreview = () => {
   const previewRef = useRef(null);
+  const titleRef = useRef(null);
   const { menu, config } = useMenuStore();
   const [downloading, setDownloading] = useState(false);
   const [sending, setSending] = useState(false);
 
   const currentTheme = THEMES[config.theme] || THEMES.tradicional;
   const isSquare = config.format === 'square';
+
+  // Auto-adjust title font size if it risks overflowing/clipping on narrow screens
+  React.useEffect(() => {
+    const el = titleRef.current;
+    if (!el) return;
+
+    const adjustTitleSize = () => {
+      el.style.fontSize = ''; // reset to CSS default
+      const parent = el.parentElement;
+      if (!parent) return;
+      const parentWidth = parent.clientWidth;
+      if (parentWidth > 0 && el.scrollWidth > parentWidth) {
+        const currentSize = parseFloat(window.getComputedStyle(el).fontSize);
+        const ratio = parentWidth / el.scrollWidth;
+        el.style.fontSize = `${currentSize * ratio * 0.95}px`;
+      }
+    };
+
+    adjustTitleSize();
+    window.addEventListener('resize', adjustTitleSize);
+    return () => window.removeEventListener('resize', adjustTitleSize);
+  }, [config.format, config.theme, menu]);
 
   const downloadImage = async () => {
     if (!previewRef.current) return;
@@ -99,7 +122,7 @@ const MenuPreview = () => {
 
           <div className="card-inner">
             <header className="card-header">
-              <h1 className="serif">VIANDAS SALUDABLES</h1>
+              <h1 className="serif" ref={titleRef}>VIANDAS SALUDABLES</h1>
               <p className="subtitle outfit">¿Qué comemos esta semana?</p>
             </header>
 
@@ -156,6 +179,7 @@ const MenuPreview = () => {
           justify-content: center;
           align-items: center;
           padding: 10px;
+          container-type: inline-size;
         }
         .menu-card {
           position: relative;
@@ -168,103 +192,87 @@ const MenuPreview = () => {
           display: flex;
           flex-direction: column;
           box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+          container-type: inline-size;
         }
         .menu-card.square {
           aspect-ratio: 1 / 1;
-          padding: 8px 12px 15px 12px; /* Top reduced to 8px to move title up */
-        }
-        @media (min-width: 900px) {
-          .menu-card.square { padding: 30px 25px; }
+          padding: 4cqw 5cqw 6cqw 5cqw;
         }
         .menu-card.story { 
           aspect-ratio: 9/16; 
           max-width: 420px; 
-          padding: 2% 6% 8% 6%; /* Even less top padding */
+          padding: 4cqw 6cqw 8cqw 6cqw;
         }
 
         .bg-layer { position: absolute; top:0; left:0; right:0; bottom:0; background-size: cover; background-position: center; z-index: 1; }
         .bg-overlay { position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.6); backdrop-filter: blur(4px); z-index: 2; }
         
         .card-inner { position: relative; z-index: 3; display: flex; flex-direction: column; height: 100%; justify-content: space-between; }
-        .card-header { text-align: center; margin-bottom: 1%; } /* Reduced margin */
-        /* --- MOBILE SIZES (Default) --- */
-        .card-header h1 { font-size: 24px; margin: 0; color: #1a1a1a; text-transform: uppercase; }
-        .square .card-header h1 { font-size: 20px; }
+        .card-header { text-align: center; margin-bottom: 2cqw; width: 100%; }
+
+        .card-header h1 { 
+          font-size: 5.6cqw; 
+          margin: 0; 
+          color: #1a1a1a; 
+          text-transform: uppercase; 
+          line-height: 1.1;
+          width: 100%;
+          display: block;
+          white-space: nowrap;
+          box-sizing: border-box;
+        }
+        .square .card-header h1 { font-size: 5.5cqw; }
         .story .card-header h1 { 
-          font-size: 26px; 
-          word-spacing: -2px; /* Smoother, no se pegan tanto */
+          font-size: 5.8cqw; 
           white-space: nowrap; 
         } 
-        .card-header .subtitle { font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 1px; }
-        .story .card-header .subtitle { font-size: 11px; }
         
-        .preview-day-name { font-size: 14px; font-weight: 700; border-bottom: 1px solid rgba(0,0,0,0.06); margin-bottom: 2px; }
-        .story .preview-day-name { font-size: 16px; padding-bottom: 3px; }
+        .card-header .subtitle { font-size: 2.8cqw; color: #555; text-transform: uppercase; letter-spacing: 0.2cqw; margin-top: 1cqw; }
+        .story .card-header .subtitle { font-size: 3.2cqw; }
         
-        .preview-dish-text { font-size: 12px; line-height: 1.1; color: #222; }
-        .story .preview-dish-text { font-size: 13.5px; line-height: 1.2; }
+        .preview-day-name { font-size: 4.2cqw; font-weight: 700; border-bottom: 1px solid rgba(0,0,0,0.06); margin-bottom: 0.5cqw; }
+        .story .preview-day-name { font-size: 4.8cqw; padding-bottom: 1cqw; }
         
-        .notas-text { font-size: 11px; }
-        .story .notas-text { font-size: 13px; }
+        .preview-dish-text { font-size: 3.5cqw; line-height: 1.15; color: #222; }
+        .story .preview-dish-text { font-size: 4cqw; line-height: 1.25; }
+        
+        .notas-text { font-size: 3.2cqw; }
+        .story .notas-text { font-size: 3.8cqw; }
 
-        /* --- WEB / DESKTOP SIZES (Over 900px) --- */
-        @media (min-width: 900px) {
-          .card-header h1 { 
-            font-size: 36px; 
-            word-spacing: normal; /* Reset para que no herede de mobile */
-            white-space: normal; 
-          }
-          .square .card-header h1 { font-size: 32px; }
-          .card-header .subtitle { font-size: 14px; }
-          
-          .preview-day-name { font-size: 18px; }
-          
-          .preview-dish-text { font-size: 16px; line-height: 1.2; }
-          .story .preview-dish-text { font-size: 18px; } /* Larger for Web Story */
-          
-          .notas-text { font-size: 14px; }
-          
-          .menu-card { padding: 40px; }
-          .menu-card.square { padding: 30px; }
-          .preview-days-grid { gap: 15px; }
-        }
-
-        .preview-days-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; align-content: center; }
+        .preview-days-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5cqw; flex: 1; align-content: center; }
         .square .preview-days-grid { 
-          gap: 6px 10px;
-          margin-bottom: 10px;
+          gap: 2cqw 3cqw;
+          margin-bottom: 3cqw;
         }
         .story .preview-days-grid { 
           grid-template-columns: 1fr; 
-          gap: 7px; /* Reduced to avoid touching */
+          gap: 2.5cqw; 
           align-content: start; 
-          margin-top: 2%;
-        }
-        
-        @media (min-width: 900px) {
-          .preview-days-grid { gap: 15px; }
-          .square .preview-days-grid { gap: 15px 25px; }
+          margin-top: 4cqw;
         }
         
         .glass-card {
           background: rgba(255, 255, 255, 0.85);
           backdrop-filter: blur(12px);
           border: 1px solid rgba(255,255,255,0.6);
-          padding: 8px 10px;
-          border-radius: 8px;
+          padding: 2.5cqw 3cqw;
+          border-radius: 2.5cqw;
           display: flex;
           flex-direction: column;
           justify-content: center;
         }
-        @media (min-width: 900px) {
-          .glass-card { padding: 15px 20px; border-radius: 12px; }
-        }
-        .novedad-badge { font-weight: 700; margin-right: 6px; }
         
+        @media (min-width: 900px) {
+          .menu-card { max-width: 550px; }
+          .secondary-btn, .primary-btn { padding: 16px 24px; font-size: 16px; }
+        }
+
+        .novedad-badge { font-weight: 700; margin-right: 2cqw; }
         .info-card { background: hsla(var(--p-h), var(--p-s), var(--p-l), 0.05); border-color: hsla(var(--p-h), var(--p-s), var(--p-l), 0.2); }
 
-        .action-buttons-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .secondary-btn { background: white; border: 2px solid var(--primary); color: var(--primary); padding: 16px; border-radius: 50px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
+        .action-buttons-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+        .secondary-btn { background: white; border: 2px solid var(--primary); color: var(--primary); padding: 14px; border-radius: 50px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
+        .primary-btn { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 50px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
         
         @media (max-width: 600px) {
           .preview-wrapper { padding: 5px; }
