@@ -16,6 +16,9 @@ const useMenuStore = create((set) => ({
     theme: 'nude_botanico',
     format: 'square',
     textColor: null, // null means use theme's default primary color
+    bgOpacity: 20, // percentage 0% to 80% (lower = background image is sharper and more visible)
+    bgBlur: 0, // blur in px (0px = crisp sharp image)
+    customBgImage: null, // base64 data URL for uploaded background
   },
 
   // Actions

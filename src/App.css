@@ -151,6 +151,71 @@ body {
   gap: 8px;
 }
 
+.config-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.upload-btn-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: white;
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 50px;
+  cursor: pointer;
+  border: 1px solid var(--primary);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
+
+.upload-btn-chip:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.slider-value-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: rgba(45, 106, 79, 0.1);
+  padding: 2px 10px;
+  border-radius: 50px;
+}
+
+.bg-slider-input {
+  width: 100%;
+  height: 6px;
+  border-radius: 6px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  background: #e2e8f0;
+  border: none;
+  outline: none;
+  margin-top: 4px;
+}
+
+.slider-hints {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
 .bg-swatches-grid {
   display: flex;
   flex-wrap: wrap;

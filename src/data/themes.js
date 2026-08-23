@@ -5,6 +5,18 @@ export const THEMES = {
     colors: { primary: '#8c6d46', secondary: '#faf5ef' },
     backgroundImage: '/assets/backgrounds/bg-nude-botanico.png',
   },
+  sakura: {
+    id: 'sakura',
+    name: 'Flores Sakura',
+    colors: { primary: '#d94864', secondary: '#fff0f5' },
+    backgroundImage: '/assets/backgrounds/bg-sakura.png',
+  },
+  oliva_monstera: {
+    id: 'oliva_monstera',
+    name: 'Oliva Monstera',
+    colors: { primary: '#3b5219', secondary: '#f4f7f0' },
+    backgroundImage: '/assets/backgrounds/bg-oliva-monstera.png',
+  },
   celeste_hojas: {
     id: 'celeste_hojas',
     name: 'Celeste & Rosa',
@@ -69,6 +81,8 @@ export const THEMES = {
 
 export const FONT_COLORS = [
   { id: 'oscuro', color: '#1a1a1a' },
+  { id: 'blanco', color: '#ffffff' },
+  { id: 'oliva', color: '#3b5219' },
   { id: 'nude', color: '#8c6d46' },
   { id: 'verde', color: '#2d6a4f' },
   { id: 'celeste', color: '#1e3a8a' },

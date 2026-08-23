@@ -11,7 +11,16 @@ const MenuPreview = () => {
   const [downloading, setDownloading] = useState(false);
   const [sending, setSending] = useState(false);
 
-  const currentTheme = THEMES[config.theme] || THEMES.nude_botanico || THEMES.tradicional;
+  let currentTheme = THEMES[config.theme] || THEMES.nude_botanico || THEMES.tradicional;
+  if (config.theme === 'custom' && config.customBgImage) {
+    currentTheme = {
+      id: 'custom',
+      name: 'Fondo Personalizado',
+      colors: { primary: config.textColor || '#1a1a1a', secondary: '#ffffff' },
+      backgroundImage: config.customBgImage,
+    };
+  }
+
   const primaryColor = config.textColor || currentTheme.colors.primary;
   const isSquare = config.format === 'square';
 
@@ -35,7 +44,7 @@ const MenuPreview = () => {
     adjustTitleSize();
     window.addEventListener('resize', adjustTitleSize);
     return () => window.removeEventListener('resize', adjustTitleSize);
-  }, [config.format, config.theme, config.textColor, menu]);
+  }, [config.format, config.theme, config.textColor, config.customBgImage, menu]);
 
   const downloadImage = async () => {
     if (!previewRef.current) return;
@@ -119,7 +128,14 @@ const MenuPreview = () => {
           {currentTheme.backgroundImage && (
             <div className="bg-layer" style={{ backgroundImage: `url(${currentTheme.backgroundImage})` }} />
           )}
-          <div className="bg-overlay" />
+          <div 
+            className="bg-overlay" 
+            style={{ 
+              backgroundColor: `rgba(255, 255, 255, ${(config.bgOpacity ?? 20) / 100})`,
+              backdropFilter: `blur(${config.bgBlur ?? 0}px)`,
+              WebkitBackdropFilter: `blur(${config.bgBlur ?? 0}px)`
+            }} 
+          />
 
           <div className="card-inner">
             <header className="card-header">

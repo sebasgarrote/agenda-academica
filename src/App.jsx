@@ -3,13 +3,24 @@ import useMenuStore from './store/useMenuStore';
 import PromptInput from './components/PromptInput';
 import FormInput from './components/FormInput';
 import MenuPreview from './components/MenuPreview';
-import { LayoutDashboard, MessageSquare, Palette, Maximize, Check, Type } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Palette, Maximize, Check, Type, Upload, Sliders } from 'lucide-react';
 import { THEMES, FONT_COLORS } from './data/themes';
 import './App.css';
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('prompt'); // prompt | form
   const { config, updateConfig } = useMenuStore();
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        updateConfig({ customBgImage: evt.target.result, theme: 'custom', textColor: null });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <div className="app-container">
@@ -46,10 +57,31 @@ const App = () => {
 
           {/* SHARED CONFIGURATION */}
           <div className="shared-config glass animate-in" style={{ animationDelay: '0.1s' }}>
-            {/* Background Thumbnail Swatches */}
+            {/* Background Thumbnail Swatches & Custom Upload */}
             <div className="config-group">
-                <label className="config-label"><Palette size={16} /> Fondo de la Tarjeta</label>
+                <div className="config-header-row">
+                  <label className="config-label"><Palette size={16} /> Fondo de la Tarjeta</label>
+                  <label className="upload-btn-chip" title="Subir tu propia imagen de fondo">
+                    <Upload size={14} />
+                    <span>Subir Fondo</span>
+                    <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
+                  </label>
+                </div>
+                
                 <div className="bg-swatches-grid">
+                    {/* Custom Uploaded Swatch (if exists) */}
+                    {config.customBgImage && (
+                      <button 
+                          key="custom"
+                          title="Fondo Personalizado"
+                          className={`bg-swatch-btn ${config.theme === 'custom' ? 'active' : ''}`}
+                          style={{ backgroundImage: `url(${config.customBgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                          onClick={() => updateConfig({ theme: 'custom' })}
+                      >
+                          {config.theme === 'custom' && <Check size={16} className="swatch-check" />}
+                      </button>
+                    )}
+
                     {Object.values(THEMES).map(t => {
                       const isSelected = config.theme === t.id;
                       return (
@@ -71,6 +103,27 @@ const App = () => {
                 </div>
             </div>
 
+            {/* Slider for Background Opacity / Atenuación */}
+            <div className="config-group">
+                <div className="slider-header">
+                  <label className="config-label"><Sliders size={16} /> Atenuación del Fondo</label>
+                  <span className="slider-value-badge">{config.bgOpacity ?? 20}%</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="60" 
+                  step="5"
+                  value={config.bgOpacity ?? 20} 
+                  onChange={(e) => updateConfig({ bgOpacity: Number(e.target.value) })}
+                  className="bg-slider-input"
+                />
+                <div className="slider-hints">
+                  <span>Nitidez Total (0%)</span>
+                  <span>Más Atenuado (60%)</span>
+                </div>
+            </div>
+
             {/* Font Color Swatches */}
             <div className="config-group">
                 <label className="config-label"><Type size={16} /> Color de Letra / Títulos</label>
@@ -86,7 +139,7 @@ const App = () => {
                             style={{ backgroundColor: c.color }}
                             onClick={() => updateConfig({ textColor: c.color })}
                         >
-                            {isSelected && <Check size={14} style={{ color: '#ffffff' }} />}
+                            {isSelected && <Check size={14} style={{ color: c.color.toLowerCase() === '#ffffff' ? '#1a1a1a' : '#ffffff' }} />}
                         </button>
                       );
                     })}
