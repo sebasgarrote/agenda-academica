@@ -139,11 +139,13 @@ const MenuPreview = () => {
 
           <div className="card-inner">
             <header className="card-header">
-              <div className="title-row" ref={titleRef}>
-                <h1 className="serif" style={{ color: primaryColor }}>VIANDAS SALUDABLES</h1>
-                <img src="/assets/logo.png" alt="Logo Viandas" className="title-logo" />
+              <div className="header-brand-container" ref={titleRef}>
+                <div className="brand-text-block">
+                  <h1 className="serif" style={{ color: primaryColor }}>VIANDAS SALUDABLES</h1>
+                  <p className="subtitle outfit">¿Qué comemos esta semana?</p>
+                </div>
+                <img src="/assets/logo.png" alt="Logo Viandas" className="brand-logo-large" />
               </div>
-              <p className="subtitle outfit">¿Qué comemos esta semana?</p>
             </header>
 
             <div className="preview-days-grid">
@@ -230,30 +232,45 @@ const MenuPreview = () => {
         .card-inner { position: relative; z-index: 3; display: flex; flex-direction: column; height: 100%; justify-content: space-between; }
         .card-header { text-align: center; margin-bottom: 2cqw; width: 100%; display: flex; flex-direction: column; align-items: center; }
 
-        .title-row {
+        .header-brand-container {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 1.5cqw;
+          gap: 2.2cqw;
           max-width: 100%;
           white-space: nowrap;
           box-sizing: border-box;
-          font-size: 5.2cqw;
+          font-size: 5.0cqw;
         }
-        .square .title-row { font-size: 5.0cqw; }
-        .story .title-row { font-size: 5.3cqw; }
+        .square .header-brand-container { font-size: 4.8cqw; }
+        .story .header-brand-container { font-size: 5.0cqw; }
 
-        .title-row h1 { 
+        .brand-text-block {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          text-align: left;
+        }
+
+        .brand-text-block h1 { 
           font-size: inherit; 
           margin: 0; 
           text-transform: uppercase; 
-          line-height: 1.1;
+          line-height: 1.0;
           white-space: nowrap;
-          display: inline-block;
         }
 
-        .title-logo {
-          height: 1.15em;
+        .brand-text-block .subtitle { 
+          font-size: 0.44em; 
+          color: #555; 
+          text-transform: uppercase; 
+          letter-spacing: 0.15cqw; 
+          margin-top: 0.2cqw; 
+          white-space: nowrap;
+        } 
+
+        .brand-logo-large {
+          height: 2.05em;
           width: auto;
           object-fit: contain;
           vertical-align: middle;
