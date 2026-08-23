@@ -13,9 +13,9 @@ const useMenuStore = create((set) => ({
   
   // Design Preferences
   config: {
-    theme: 'tradicional', // tradicional, naturaleza, elegante, limpio
-    format: 'square', // square, story
-    autoColors: true,
+    theme: 'nude_botanico',
+    format: 'square',
+    textColor: null, // null means use theme's default primary color
   },
 
   // Actions

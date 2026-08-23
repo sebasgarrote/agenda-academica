@@ -3,8 +3,8 @@ import useMenuStore from './store/useMenuStore';
 import PromptInput from './components/PromptInput';
 import FormInput from './components/FormInput';
 import MenuPreview from './components/MenuPreview';
-import { LayoutDashboard, MessageSquare, Palette, Maximize } from 'lucide-react';
-import { THEMES } from './data/themes';
+import { LayoutDashboard, MessageSquare, Palette, Maximize, Check, Type } from 'lucide-react';
+import { THEMES, FONT_COLORS } from './data/themes';
 import './App.css';
 
 const App = () => {
@@ -46,18 +46,50 @@ const App = () => {
 
           {/* SHARED CONFIGURATION */}
           <div className="shared-config glass animate-in" style={{ animationDelay: '0.1s' }}>
+            {/* Background Thumbnail Swatches */}
             <div className="config-group">
-                <label className="config-label"><Palette size={16} /> Estilo Visual</label>
-                <div className="theme-chips">
-                    {Object.values(THEMES).map(t => (
+                <label className="config-label"><Palette size={16} /> Fondo de la Tarjeta</label>
+                <div className="bg-swatches-grid">
+                    {Object.values(THEMES).map(t => {
+                      const isSelected = config.theme === t.id;
+                      return (
                         <button 
                             key={t.id}
-                            className={`theme-chip ${config.theme === t.id ? 'active' : ''}`}
-                            onClick={() => updateConfig({ theme: t.id })}
+                            title={t.name}
+                            className={`bg-swatch-btn ${isSelected ? 'active' : ''}`}
+                            style={
+                              t.backgroundImage 
+                                ? { backgroundImage: `url(${t.backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                                : { backgroundColor: '#ffffff', border: '1px solid #ddd' }
+                            }
+                            onClick={() => updateConfig({ theme: t.id, textColor: null })}
                         >
-                            {t.name}
+                            {isSelected && <Check size={16} className="swatch-check" />}
                         </button>
-                    ))}
+                      );
+                    })}
+                </div>
+            </div>
+
+            {/* Font Color Swatches */}
+            <div className="config-group">
+                <label className="config-label"><Type size={16} /> Color de Letra / Títulos</label>
+                <div className="font-colors-grid">
+                    {FONT_COLORS.map(c => {
+                      const activeColor = config.textColor || (THEMES[config.theme] ? THEMES[config.theme].colors.primary : '#1a1a1a');
+                      const isSelected = activeColor.toLowerCase() === c.color.toLowerCase();
+                      return (
+                        <button 
+                            key={c.id}
+                            title={c.color}
+                            className={`font-color-btn ${isSelected ? 'active' : ''}`}
+                            style={{ backgroundColor: c.color }}
+                            onClick={() => updateConfig({ textColor: c.color })}
+                        >
+                            {isSelected && <Check size={14} style={{ color: '#ffffff' }} />}
+                        </button>
+                      );
+                    })}
                 </div>
             </div>
             
@@ -72,7 +104,6 @@ const App = () => {
                     className={`format-btn ${config.format === 'story' ? 'active' : ''}`}
                     onClick={() => updateConfig({ format: 'story' })}
                   >9:16 (Historia)</button>
-
                 </div>
             </div>
 

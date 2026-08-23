@@ -11,7 +11,8 @@ const MenuPreview = () => {
   const [downloading, setDownloading] = useState(false);
   const [sending, setSending] = useState(false);
 
-  const currentTheme = THEMES[config.theme] || THEMES.tradicional;
+  const currentTheme = THEMES[config.theme] || THEMES.nude_botanico || THEMES.tradicional;
+  const primaryColor = config.textColor || currentTheme.colors.primary;
   const isSquare = config.format === 'square';
 
   // Auto-adjust title font size if it risks overflowing/clipping on narrow screens
@@ -34,7 +35,7 @@ const MenuPreview = () => {
     adjustTitleSize();
     window.addEventListener('resize', adjustTitleSize);
     return () => window.removeEventListener('resize', adjustTitleSize);
-  }, [config.format, config.theme, menu]);
+  }, [config.format, config.theme, config.textColor, menu]);
 
   const downloadImage = async () => {
     if (!previewRef.current) return;
@@ -122,14 +123,14 @@ const MenuPreview = () => {
 
           <div className="card-inner">
             <header className="card-header">
-              <h1 className="serif" ref={titleRef}>VIANDAS SALUDABLES</h1>
+              <h1 className="serif" ref={titleRef} style={{ color: primaryColor }}>VIANDAS SALUDABLES</h1>
               <p className="subtitle outfit">¿Qué comemos esta semana?</p>
             </header>
 
             <div className="preview-days-grid">
               {days.map(day => (
                 <div key={day.key} className="preview-day-card glass-card">
-                  <span className="preview-day-name serif" style={{ color: currentTheme.colors.primary }}>{day.label}</span>
+                  <span className="preview-day-name serif" style={{ color: primaryColor }}>{day.label}</span>
                   <p className="preview-dish-text outfit">{menu[day.key] || 'Cerrado'}</p>
                 </div>
               ))}
@@ -143,7 +144,7 @@ const MenuPreview = () => {
             {menu.notas && !isSquare && (
               <footer className="preview-card-footer glass-card">
                 <p className="notas-text outfit">
-                  <span className="novedad-badge serif" style={{ color: currentTheme.colors.primary }}>{menu.notas}</span>
+                  <span className="novedad-badge serif" style={{ color: primaryColor }}>{menu.notas}</span>
                 </p>
               </footer>
             )}
