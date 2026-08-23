@@ -139,7 +139,10 @@ const MenuPreview = () => {
 
           <div className="card-inner">
             <header className="card-header">
-              <h1 className="serif" ref={titleRef} style={{ color: primaryColor }}>VIANDAS SALUDABLES</h1>
+              <div className="title-row" ref={titleRef}>
+                <h1 className="serif" style={{ color: primaryColor }}>VIANDAS SALUDABLES</h1>
+                <img src="/assets/logo.png" alt="Logo Viandas" className="title-logo" />
+              </div>
               <p className="subtitle outfit">¿Qué comemos esta semana?</p>
             </header>
 
@@ -225,23 +228,36 @@ const MenuPreview = () => {
         .bg-overlay { position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.6); backdrop-filter: blur(4px); z-index: 2; }
         
         .card-inner { position: relative; z-index: 3; display: flex; flex-direction: column; height: 100%; justify-content: space-between; }
-        .card-header { text-align: center; margin-bottom: 2cqw; width: 100%; }
+        .card-header { text-align: center; margin-bottom: 2cqw; width: 100%; display: flex; flex-direction: column; align-items: center; }
 
-        .card-header h1 { 
-          font-size: 5.6cqw; 
-          margin: 0; 
-          color: #1a1a1a; 
-          text-transform: uppercase; 
-          line-height: 1.1;
-          width: 100%;
-          display: block;
+        .title-row {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 1.5cqw;
+          max-width: 100%;
           white-space: nowrap;
           box-sizing: border-box;
+          font-size: 5.2cqw;
         }
-        .square .card-header h1 { font-size: 5.5cqw; }
-        .story .card-header h1 { 
-          font-size: 5.8cqw; 
-          white-space: nowrap; 
+        .square .title-row { font-size: 5.0cqw; }
+        .story .title-row { font-size: 5.3cqw; }
+
+        .title-row h1 { 
+          font-size: inherit; 
+          margin: 0; 
+          text-transform: uppercase; 
+          line-height: 1.1;
+          white-space: nowrap;
+          display: inline-block;
+        }
+
+        .title-logo {
+          height: 1.15em;
+          width: auto;
+          object-fit: contain;
+          vertical-align: middle;
+          flex-shrink: 0;
         } 
         
         .card-header .subtitle { font-size: 2.8cqw; color: #555; text-transform: uppercase; letter-spacing: 0.2cqw; margin-top: 1cqw; }
