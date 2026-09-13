@@ -1,16 +1,66 @@
-# React + Vite
+# Agenda Académica
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web para organizar y hacer seguimiento de actividades universitarias.
 
-Currently, two official plugins are available:
+## Características
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Calendario mensual con actividades
+- Vista semanal con filtros
+- Modo local (localStorage) y sincronización en la nube con Supabase
+- Acceso rápido al Campus UTN
 
-## React Compiler
+## Paso a paso para publicarla online
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1) Crear cuenta y proyecto en Supabase
 
-## Expanding the ESLint configuration
+1. Ir a https://supabase.com y crear una cuenta (podés usar GitHub).
+2. Crear un **nuevo proyecto**.
+3. Dentro del proyecto, ir a **SQL Editor** y ejecutar el script de tablas + RLS.
+   - Podés usar el script que estaba en la app o el siguiente resumen:
+     - Tabla `subjects`
+     - Tabla `activities`
+     - Tabla `notification_preferences`
+     - RLS por `auth.uid() = user_id` en cada tabla.
+4. Ir a **Project Settings ? API** y copiar:
+   - `Project URL`
+   - `anon public` key
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 2) Configurar la app
+
+1. Copiar `.env.example` como `.env` en la raíz del proyecto.
+2. Pegar la URL y la clave de Supabase:
+   - `VITE_SUPABASE_URL=...`
+   - `VITE_SUPABASE_ANON_KEY=...`
+
+### 3) Probar en local
+
+```bash
+npm install
+npm run dev
+```
+
+### 4) Publicar online (ejemplo: Vercel)
+
+1. Subir el proyecto a GitHub.
+2. En Vercel, crear un nuevo proyecto desde ese repositorio.
+3. En **Environment Variables** de Vercel, agregar:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+4. Deploy.
+
+### 5) Configurar la app la primera vez
+
+1. Abrir la URL publicada.
+2. En el header, clic en **Ingresar** y configurar Supabase (o pegar credenciales).
+3. Una vez configurado, los datos se guardan en la nube vinculados a tu usuario.
+
+## Scripts
+
+- `npm run dev` — desarrollo
+- `npm run build` — build de producción
+- `npm run preview` — previsualizar build localmente
+
+## Notas
+
+- Modo local sin Supabase: funciona con `localStorage`.
+- Al pasar a Supabase, se mantiene la navegación, calendario, filtros y campus.
