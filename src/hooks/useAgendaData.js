@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { storageService, migrateLocalDataToCloud } from '../services/storageService';
+import { storageService } from '../services/storageService';
 import { getCloudSyncStatus } from '../services/supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import { getUrgencyInfo, getDaysDifferenceFromToday } from '../utils/dateUtils';
@@ -29,18 +29,6 @@ export const useAgendaData = () => {
         storageService.getPreferences(user)
       ]);
 
-      // Primera conexión: subir el respaldo local al espacio privado del usuario.
-      if (user && getCloudSyncStatus().isConfigured && subData.length === 0) {
-        const localSubjects = JSON.parse(localStorage.getItem('agenda_academica_v2_subjects') || '[]');
-        if (localSubjects.length > 0) {
-          await migrateLocalDataToCloud(user);
-          [subData, actData, prefData] = await Promise.all([
-            storageService.getSubjects(user),
-            storageService.getActivities(user),
-            storageService.getPreferences(user)
-          ]);
-        }
-      }
       setSubjects(subData || []);
       setActivities(actData || []);
       setPreferences(prefData || { days_before: [3, 1, 0], notifications_enabled: true });
