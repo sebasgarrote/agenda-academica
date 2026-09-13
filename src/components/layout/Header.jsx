@@ -1,9 +1,9 @@
 import React from 'react';
-import { Cloud, CloudOff, User, LogOut, Plus, ExternalLink } from 'lucide-react';
+import { Cloud, CloudOff, User, LogOut, Plus, ExternalLink, Trash2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getCloudSyncStatus } from '../../services/supabaseClient';
 
-const Header = ({ onOpenAuth, onOpenAddActivity }) => {
+const Header = ({ onOpenAuth, onOpenAddActivity, localBackupCounts, onClearLocalBackup }) => {
   const { user, signOut } = useAuth();
   const cloudStatus = getCloudSyncStatus();
 
@@ -35,6 +35,16 @@ const Header = ({ onOpenAuth, onOpenAddActivity }) => {
           </button>
         )}
 
+        {localBackupCounts && (
+          <button
+            className="header-icon-btn local-cleanup-btn"
+            onClick={onClearLocalBackup}
+            title={'Eliminar copia local: ' + localBackupCounts.subjects + ' materias y ' + localBackupCounts.activities + ' actividades'}
+          >
+            <Trash2 size={16} />
+            <span className="desktop-only-text">Eliminar copia local</span>
+          </button>
+        )}
         {/* Campus Button */}
         <a
           href="https://tua.sied.utn.edu.ar/my/index.php"

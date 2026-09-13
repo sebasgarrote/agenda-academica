@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LockKeyhole, GraduationCap } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
 import { useAgendaData } from './hooks/useAgendaData';
@@ -30,6 +30,30 @@ const App = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const [selectedActivityId, setSelectedActivityId] = useState(null);
+  const [localBackupCounts, setLocalBackupCounts] = useState(null);
+
+  useEffect(() => {
+    if (!user) return;
+    try {
+      const localSubjects = JSON.parse(localStorage.getItem('agenda_academica_v2_subjects') || '[]');
+      const localActivities = JSON.parse(localStorage.getItem('agenda_academica_v2_activities') || '[]');
+      if (localSubjects.length || localActivities.length) {
+        setLocalBackupCounts({ subjects: localSubjects.length, activities: localActivities.length });
+      }
+    } catch {
+      // Ignore unreadable legacy data.
+    }
+  }, [user]);
+
+  const handleClearLocalBackup = () => {
+    if (!localBackupCounts) return;
+    const message = 'Eliminar la copia local de ' + localBackupCounts.subjects + ' materias y ' + localBackupCounts.activities + ' actividades? Los datos en Supabase no se modificarán.';
+    if (!window.confirm(message)) return;
+    localStorage.removeItem('agenda_academica_v2_subjects');
+    localStorage.removeItem('agenda_academica_v2_activities');
+    localStorage.removeItem('agenda_academica_v2_preferences');
+    setLocalBackupCounts(null);
+  };
 
   const {
     subjects,
@@ -131,6 +155,8 @@ const App = () => {
       <Header
         onOpenAuth={() => setIsAuthModalOpen(true)}
         onOpenAddActivity={() => handleOpenAddActivity()}
+        localBackupCounts={localBackupCounts}
+        onClearLocalBackup={handleClearLocalBackup}
       />
 
       {/* Navigation Tab Bar */}
