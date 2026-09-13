@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, AlertTriangle, AlertCircle, Check, Settings, Smartphone, CheckCircle, ExternalLink } from 'lucide-react';
+import { Bell, AlertTriangle, AlertCircle, Check, Settings, Smartphone, ExternalLink } from 'lucide-react';
 import { formatDateSpanish } from '../../utils/dateUtils';
 
 const AlertsCenter = ({ alerts, preferences, onSavePreferences, onToggleCompleteActivity }) => {
@@ -149,7 +149,6 @@ const AlertsCenter = ({ alerts, preferences, onSavePreferences, onToggleComplete
               onChange={(e) => setCampusUrl(e.target.value)}
               onBlur={() => onSavePreferences({ days_before: daysBefore, notifications_enabled: notificationsEnabled, campus_url: campusUrl.trim() || 'https://tua.sied.utn.edu.ar/my/index.php' })}
             />
-            <p className="config-hint">Cada cuenta puede elegir su propio enlace. Se guarda al salir del campo.</p>
           </div>
 
           <div className="config-option-row">
@@ -199,7 +198,7 @@ const AlertsCenter = ({ alerts, preferences, onSavePreferences, onToggleComplete
           {/* Web Push Notification Section */}
           <div className="push-notification-box">
             <h4 className="push-title">
-              <Smartphone size={16} className="inline-icon" /> Notificaciones Push Cloud / PWA
+              <Smartphone size={16} className="inline-icon" /> Notificaciones
             </h4>
             <p className="push-desc">
               Recibirás notificaciones directas en tu computadora y dispositivo celular incluso si tenés la app cerrada.
@@ -214,17 +213,9 @@ const AlertsCenter = ({ alerts, preferences, onSavePreferences, onToggleComplete
 
             {pushStatus !== 'granted' && (
               <button className="btn-primary push-enable-btn" onClick={requestPushPermission}>
-                Activar Notificaciones Push
+                Activar Notificaciones
               </button>
             )}
-          </div>
-
-          {/* Informational Cloud Explanation */}
-          <div className="cloud-info-box">
-            <CheckCircle size={16} className="inline-icon" />
-            <p>
-              <strong>Infraestructura Cloud:</strong> El procesamiento de alertas no depende de que tu computadora esté encendida. Supabase Cloud y el Service Worker procesan las notificaciones automáticamente.
-            </p>
           </div>
         </div>
       </div>
