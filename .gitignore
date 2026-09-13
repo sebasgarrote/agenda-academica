@@ -27,3 +27,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Private academic backups (never commit)
+agenda-backup.json
+importar-datos.html
+materias completas.pdf
