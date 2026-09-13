@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { LockKeyhole, GraduationCap } from 'lucide-react';
+import { useAuth } from './context/AuthContext';
 import { useAgendaData } from './hooks/useAgendaData';
 import Header from './components/layout/Header';
 import Navbar from './components/layout/Navbar';
@@ -14,6 +16,7 @@ import AuthModal from './components/modals/AuthModal';
 import './App.css';
 
 const App = () => {
+  const { user, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
 
   // Modal States
@@ -101,6 +104,26 @@ const App = () => {
       status: newStatus
     });
   };
+
+  if (authLoading) {
+    return <div className="auth-loading-screen"><div className="spinner"></div></div>;
+  }
+
+  if (!user) {
+    return (
+      <div className="auth-required-screen">
+        <div className="auth-required-card glass-card animate-in">
+          <div className="auth-required-icon"><GraduationCap size={32} /></div>
+          <h1>Agenda Académica</h1>
+          <p>Iniciá sesión para acceder a tu agenda personal y sincronizada de forma segura.</p>
+          <button className="btn-primary auth-required-button" onClick={() => setIsAuthModalOpen(true)}>
+            <LockKeyhole size={17} /> Ingresar o crear cuenta
+          </button>
+        </div>
+        <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      </div>
+    );
+  }
 
   return (
     <div className="app-layout">

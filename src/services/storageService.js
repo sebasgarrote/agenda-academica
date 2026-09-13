@@ -92,13 +92,8 @@ export const storageService = {
       return data || [];
     }
 
-    // Local Fallback
-    const localSubjects = getLocal(SUBJECTS_KEY, null);
-    if (!localSubjects) {
-      setLocal(SUBJECTS_KEY, DEMO_SUBJECTS);
-      return DEMO_SUBJECTS;
-    }
-    return localSubjects;
+    // No se exponen datos sin una sesión autenticada.
+    return [];
   },
 
   async createSubject(subject, user = null) {
@@ -184,14 +179,8 @@ export const storageService = {
       return data || [];
     }
 
-    // Local Fallback
-    const localActivities = getLocal(ACTIVITIES_KEY, null);
-    if (!localActivities) {
-      const initial = getInitialDemoActivities();
-      setLocal(ACTIVITIES_KEY, initial);
-      return initial;
-    }
-    return localActivities;
+    // No se exponen datos sin una sesión autenticada.
+    return [];
   },
 
   async createActivity(activity, user = null) {
