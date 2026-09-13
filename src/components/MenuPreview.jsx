@@ -50,7 +50,7 @@ const MenuPreview = () => {
     if (!previewRef.current) return;
     setDownloading(true);
     try {
-      const blob = await htmlToImage.toBlob(previewRef.current, {
+      const blob = await htmlToImage.toBlob(previewRef.current, { 
         quality: 1,
         pixelRatio: 2,
         cacheBust: true,
@@ -64,13 +64,13 @@ const MenuPreview = () => {
       link.style.display = 'none';
       link.href = url;
       link.setAttribute('download', `Menu_Vianda_${Date.now()}.png`);
-
+      
       document.body.appendChild(link);
       link.click();
-
+      
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
-
+      
     } catch (err) {
       console.error('Error al generar imagen:', err);
       alert('Error técnico al crear la imagen. Por favor, usa el botón de WhatsApp!');
@@ -83,12 +83,12 @@ const MenuPreview = () => {
     if (!previewRef.current) return;
     setSending(true);
     try {
-      const dataUrl = await htmlToImage.toPng(previewRef.current, {
+      const dataUrl = await htmlToImage.toPng(previewRef.current, { 
         quality: 0.95,
         pixelRatio: 2,
         cacheBust: true
       });
-
+      
       const blob = await (await fetch(dataUrl)).blob();
       const file = new File([blob], `menu-${Date.now()}.png`, { type: 'image/png' });
 
@@ -101,9 +101,9 @@ const MenuPreview = () => {
       } else {
         const isHTTPS = window.location.protocol === 'https:';
         if (!isHTTPS && window.location.hostname !== 'localhost') {
-          alert('¡Atención! Para compartir directo por WhatsApp necesitas entrar por una conexión segura (HTTPS).');
+            alert('¡Atención! Para compartir directo por WhatsApp necesitas entrar por una conexión segura (HTTPS).');
         } else {
-          alert('Tu navegador no permite compartir imágenes directamente.');
+            alert('Tu navegador no permite compartir imágenes directamente.');
         }
       }
     } catch (err) {
@@ -128,13 +128,13 @@ const MenuPreview = () => {
           {currentTheme.backgroundImage && (
             <div className="bg-layer" style={{ backgroundImage: `url(${currentTheme.backgroundImage})` }} />
           )}
-          <div
-            className="bg-overlay"
-            style={{
+          <div 
+            className="bg-overlay" 
+            style={{ 
               backgroundColor: `rgba(255, 255, 255, ${(config.bgOpacity ?? 20) / 100})`,
               backdropFilter: `blur(${config.bgBlur ?? 0}px)`,
               WebkitBackdropFilter: `blur(${config.bgBlur ?? 0}px)`
-            }}
+            }} 
           />
 
           <div className="card-inner">
@@ -157,7 +157,7 @@ const MenuPreview = () => {
               ))}
               {isSquare && menu.notas && (
                 <div className="preview-day-card glass-card info-card">
-                  <p className="preview-dish-text outfit">{menu.notas}</p>
+                    <p className="preview-dish-text outfit">{menu.notas}</p>
                 </div>
               )}
             </div>

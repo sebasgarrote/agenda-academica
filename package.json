@@ -1,5 +1,5 @@
 {
-  "name": "agenda-academica",
+  "name": "vianda-studio",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.116.0",
     "html-to-image": "^1.11.13",
     "lucide-react": "^1.7.0",
     "react": "^19.2.4",
