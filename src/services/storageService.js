@@ -308,7 +308,8 @@ export const storageService = {
   async getPreferences(user = null) {
     const defaultPrefs = {
       days_before: [3, 1, 0],
-      notifications_enabled: true
+      notifications_enabled: true,
+      campus_url: 'https://tua.sied.utn.edu.ar/my/index.php'
     };
 
     if (supabase && user) {

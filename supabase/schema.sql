@@ -33,6 +33,7 @@ create table if not exists public.notification_preferences (
   user_id uuid primary key references auth.users(id) on delete cascade,
   days_before jsonb not null default '[3, 1, 0]'::jsonb,
   notifications_enabled boolean not null default true,
+  campus_url text not null default 'https://tua.sied.utn.edu.ar/my/index.php',
   push_subscription jsonb,
   updated_at timestamptz not null default now()
 );

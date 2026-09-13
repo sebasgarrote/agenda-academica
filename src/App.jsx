@@ -170,6 +170,7 @@ const App = () => {
         onOpenAddActivity={() => handleOpenAddActivity()}
         localBackupCounts={localBackupCounts}
         onClearLocalBackup={handleClearLocalBackup}
+        preferences={preferences}
       />
 
       {/* Navigation Tab Bar */}

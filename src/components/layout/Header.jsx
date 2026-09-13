@@ -3,9 +3,10 @@ import { Cloud, CloudOff, User, LogOut, Plus, ExternalLink, Trash2 } from 'lucid
 import { useAuth } from '../../context/AuthContext';
 import { getCloudSyncStatus } from '../../services/supabaseClient';
 
-const Header = ({ onOpenAuth, onOpenAddActivity, localBackupCounts, onClearLocalBackup }) => {
+const Header = ({ onOpenAuth, onOpenAddActivity, localBackupCounts, onClearLocalBackup, preferences }) => {
   const { user, signOut } = useAuth();
   const cloudStatus = getCloudSyncStatus();
+  const campusUrl = preferences?.campus_url || 'https://tua.sied.utn.edu.ar/my/index.php';
 
   return (
     <header className="app-header glass-header">
@@ -47,14 +48,14 @@ const Header = ({ onOpenAuth, onOpenAddActivity, localBackupCounts, onClearLocal
         )}
         {/* Campus Button */}
         <a
-          href="https://tua.sied.utn.edu.ar/my/index.php"
+          href={campusUrl}
           target="_blank"
           rel="noreferrer noopener"
-          className="header-icon-btn"
-          title="Abrir Campus UTN"
+          className="header-icon-btn campus-link-btn"
+          title="Abrir tu Campus"
         >
           <ExternalLink size={18} />
-          <span className="desktop-only-text">Campus</span>
+          <span className="desktop-only-text">Mi Campus</span>
         </a>
 
         {/* Quick Add Button desktop */}

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Bell, AlertTriangle, AlertCircle, Check, Settings, Smartphone, CheckCircle } from 'lucide-react';
+import { Bell, AlertTriangle, AlertCircle, Check, Settings, Smartphone, CheckCircle, ExternalLink } from 'lucide-react';
 import { formatDateSpanish } from '../../utils/dateUtils';
 
 const AlertsCenter = ({ alerts, preferences, onSavePreferences, onToggleCompleteActivity }) => {
   const [daysBefore, setDaysBefore] = useState(preferences.days_before || [3, 1, 0]);
   const [notificationsEnabled, setNotificationsEnabled] = useState(preferences.notifications_enabled ?? true);
+  const [campusUrl, setCampusUrl] = useState(preferences.campus_url || 'https://tua.sied.utn.edu.ar/my/index.php');
   const [pushStatus, setPushStatus] = useState(
     typeof Notification !== 'undefined' ? Notification.permission : 'default'
   );
@@ -137,6 +138,19 @@ const AlertsCenter = ({ alerts, preferences, onSavePreferences, onToggleComplete
           <h3 className="section-subtitle">
             <Settings size={18} className="inline-icon" /> Configuración de Recordatorios
           </h3>
+
+          <div className="config-group campus-url-config">
+            <label className="config-group-title"><ExternalLink size={15} className="inline-icon" /> Link personal del Campus:</label>
+            <input
+              type="url"
+              className="form-input"
+              value={campusUrl}
+              placeholder="https://tu-campus.edu.ar"
+              onChange={(e) => setCampusUrl(e.target.value)}
+              onBlur={() => onSavePreferences({ days_before: daysBefore, notifications_enabled: notificationsEnabled, campus_url: campusUrl.trim() || 'https://tua.sied.utn.edu.ar/my/index.php' })}
+            />
+            <p className="config-hint">Cada cuenta puede elegir su propio enlace. Se guarda al salir del campo.</p>
+          </div>
 
           <div className="config-option-row">
             <label className="switch-label">
