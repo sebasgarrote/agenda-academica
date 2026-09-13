@@ -32,19 +32,6 @@ const App = () => {
   const [selectedActivityId, setSelectedActivityId] = useState(null);
   const [localBackupCounts, setLocalBackupCounts] = useState(null);
 
-  useEffect(() => {
-    if (!user) return;
-    try {
-      const localSubjects = JSON.parse(localStorage.getItem('agenda_academica_v2_subjects') || '[]');
-      const localActivities = JSON.parse(localStorage.getItem('agenda_academica_v2_activities') || '[]');
-      if (localSubjects.length || localActivities.length) {
-        setLocalBackupCounts({ subjects: localSubjects.length, activities: localActivities.length });
-      }
-    } catch {
-      // Ignore unreadable legacy data.
-    }
-  }, [user]);
-
   const handleClearLocalBackup = () => {
     if (!localBackupCounts) return;
     const message = 'Eliminar la copia local de ' + localBackupCounts.subjects + ' materias y ' + localBackupCounts.activities + ' actividades? Los datos en Supabase no se modificarán.';
@@ -67,6 +54,32 @@ const App = () => {
     filters,
     actions
   } = useAgendaData();
+
+  useEffect(() => {
+    if (!user) return;
+    try {
+      const localSubjects = JSON.parse(localStorage.getItem('agenda_academica_v2_subjects') || '[]');
+      const localActivities = JSON.parse(localStorage.getItem('agenda_academica_v2_activities') || '[]');
+      const sameSubjects = JSON.stringify(
+        localSubjects.map(({ name, short_name, color, year, semester, status }) => ({ name, short_name, color, year, semester, status })).sort((a, b) => a.short_name.localeCompare(b.short_name))
+      ) === JSON.stringify(
+        subjects.map(({ name, short_name, color, year, semester, status }) => ({ name, short_name, color, year, semester, status })).sort((a, b) => a.short_name.localeCompare(b.short_name))
+      );
+      const sameActivities = JSON.stringify(
+        localActivities.map(({ title, type, description, start_date, due_date, due_time, status }) => ({ title, type, description, start_date, due_date, due_time, status })).sort((a, b) => (a.title + a.due_date).localeCompare(b.title + b.due_date))
+      ) === JSON.stringify(
+        activities.map(({ title, type, description, start_date, due_date, due_time, status }) => ({ title, type, description, start_date, due_date, due_time, status })).sort((a, b) => (a.title + a.due_date).localeCompare(b.title + b.due_date))
+      );
+
+      if (localSubjects.length && localActivities.length && sameSubjects && sameActivities) {
+        setLocalBackupCounts({ subjects: localSubjects.length, activities: localActivities.length });
+      } else {
+        setLocalBackupCounts(null);
+      }
+    } catch {
+      setLocalBackupCounts(null);
+    }
+  }, [user, subjects, activities]);
 
   // Handlers for Activity Modal
   const handleOpenAddActivity = (dateStr = null) => {
