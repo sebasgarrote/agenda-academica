@@ -1,179 +1,221 @@
 import React, { useState } from 'react';
-import useMenuStore from './store/useMenuStore';
-import PromptInput from './components/PromptInput';
-import FormInput from './components/FormInput';
-import MenuPreview from './components/MenuPreview';
-import { LayoutDashboard, MessageSquare, Palette, Maximize, Check, Type, Upload, Sliders } from 'lucide-react';
-import { THEMES, FONT_COLORS } from './data/themes';
+import { useAgendaData } from './hooks/useAgendaData';
+import Header from './components/layout/Header';
+import Navbar from './components/layout/Navbar';
+import StatsOverview from './components/dashboard/StatsOverview';
+import WeeklyView from './components/dashboard/WeeklyView';
+import CalendarView from './components/calendar/CalendarView';
+import UpcomingView from './components/upcoming/UpcomingView';
+import SubjectManager from './components/subjects/SubjectManager';
+import AlertsCenter from './components/notifications/AlertsCenter';
+import ActivityModal from './components/modals/ActivityModal';
+import SubjectModal from './components/modals/SubjectModal';
+import AuthModal from './components/modals/AuthModal';
 import './App.css';
 
 const App = () => {
-  const [activeTab, setActiveTab] = useState('prompt'); // prompt | form
-  const { config, updateConfig } = useMenuStore();
+  const [activeTab, setActiveTab] = useState('dashboard');
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files && e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        updateConfig({ customBgImage: evt.target.result, theme: 'custom', textColor: null });
-      };
-      reader.readAsDataURL(file);
+  // Modal States
+  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+  const [editingActivity, setEditingActivity] = useState(null);
+  const [defaultActivityDate, setDefaultActivityDate] = useState(null);
+
+  const [isSubjectModalOpen, setIsSubjectModalOpen] = useState(false);
+  const [editingSubject, setEditingSubject] = useState(null);
+
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const [selectedActivityId, setSelectedActivityId] = useState(null);
+
+  const {
+    subjects,
+    activities,
+    filteredActivities,
+    weeklyActivities,
+    stats,
+    alerts,
+    preferences,
+    isLoading,
+    filters,
+    actions
+  } = useAgendaData();
+
+  // Handlers for Activity Modal
+  const handleOpenAddActivity = (dateStr = null) => {
+    setEditingActivity(null);
+    setDefaultActivityDate(dateStr);
+    setIsActivityModalOpen(true);
+  };
+
+  const handleOpenEditActivity = (activity) => {
+    setEditingActivity(activity);
+    setDefaultActivityDate(null);
+    setIsActivityModalOpen(true);
+  };
+
+  const handleActivityClickFromCalendar = (activity) => {
+    setActiveTab('dashboard');
+    filters.setSubjectId('ALL');
+    filters.setType('ALL');
+    filters.setSearchQuery('');
+    if (activity.status !== 'Finalizada') {
+      filters.setStatus('PENDING');
+    } else {
+      filters.setStatus('ALL');
+    }
+    setSelectedActivityId(activity.id);
+  };
+
+  const handleSaveActivity = async (payload) => {
+    if (payload.id) {
+      await actions.updateActivity(payload);
+    } else {
+      await actions.createActivity(payload);
     }
   };
 
+  // Handlers for Subject Modal
+  const handleOpenCreateSubject = () => {
+    setEditingSubject(null);
+    setIsSubjectModalOpen(true);
+  };
+
+  const handleOpenEditSubject = (subject) => {
+    setEditingSubject(subject);
+    setIsSubjectModalOpen(true);
+  };
+
+  const handleSaveSubject = async (payload) => {
+    if (payload.id) {
+      await actions.updateSubject(payload);
+    } else {
+      await actions.createSubject(payload);
+    }
+  };
+
+  const handleToggleSubjectStatus = async (subject) => {
+    const newStatus = subject.status === 'activa' ? 'finalizada' : 'activa';
+    await actions.updateSubject({
+      ...subject,
+      status: newStatus
+    });
+  };
+
   return (
-    <div className="app-container">
-      <header className="app-header">
-        <div className="header-content">
-          <h1 className="serif italic">Vianda <span className="brand-accent">Studio</span></h1>
-          <p className="subtitle outfit">CREA MENÚS PREMIUM EN SEGUNDOS</p>
-        </div>
-      </header>
+    <div className="app-layout">
+      {/* Top Header */}
+      <Header
+        onOpenAuth={() => setIsAuthModalOpen(true)}
+        onOpenAddActivity={() => handleOpenAddActivity()}
+      />
 
-      <main className="main-content">
-        <div className="input-section">
-          {/* Tabs */}
-          <div className="tabs-container glass">
-            <button 
-              className={`tab-btn ${activeTab === 'prompt' ? 'active' : ''}`}
-              onClick={() => setActiveTab('prompt')}
-            >
-              <MessageSquare size={18} />
-              <span>Modo Libre</span>
-            </button>
-            <button 
-              className={`tab-btn ${activeTab === 'form' ? 'active' : ''}`}
-              onClick={() => setActiveTab('form')}
-            >
-              <LayoutDashboard size={18} />
-              <span>Formulario</span>
-            </button>
+      {/* Navigation Tab Bar */}
+      <Navbar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        alertCount={alerts.length}
+        onOpenAddActivity={() => handleOpenAddActivity()}
+      />
+
+      {/* Main App Content Viewport */}
+      <main className="main-viewport animate-fade-in">
+        {isLoading ? (
+          <div className="app-loading-state glass-card">
+            <div className="spinner"></div>
+            <p>Cargando tu agenda académica...</p>
           </div>
-
-          <div className="tab-content animate-in">
-            {activeTab === 'prompt' ? <PromptInput /> : <FormInput />}
-          </div>
-
-          {/* SHARED CONFIGURATION */}
-          <div className="shared-config glass animate-in" style={{ animationDelay: '0.1s' }}>
-            {/* Background Thumbnail Swatches & Custom Upload */}
-            <div className="config-group">
-                <div className="config-header-row">
-                  <label className="config-label"><Palette size={16} /> Fondo de la Tarjeta</label>
-                  <label className="upload-btn-chip" title="Subir tu propia imagen de fondo">
-                    <Upload size={14} />
-                    <span>Subir Fondo</span>
-                    <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
-                  </label>
-                </div>
-                
-                <div className="bg-swatches-grid">
-                    {/* Custom Uploaded Swatch (if exists) */}
-                    {config.customBgImage && (
-                      <button 
-                          key="custom"
-                          title="Fondo Personalizado"
-                          className={`bg-swatch-btn ${config.theme === 'custom' ? 'active' : ''}`}
-                          style={{ backgroundImage: `url(${config.customBgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-                          onClick={() => updateConfig({ theme: 'custom' })}
-                      >
-                          {config.theme === 'custom' && <Check size={16} className="swatch-check" />}
-                      </button>
-                    )}
-
-                    {Object.values(THEMES).map(t => {
-                      const isSelected = config.theme === t.id;
-                      return (
-                        <button 
-                            key={t.id}
-                            title={t.name}
-                            className={`bg-swatch-btn ${isSelected ? 'active' : ''}`}
-                            style={
-                              t.backgroundImage 
-                                ? { backgroundImage: `url(${t.backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-                                : { backgroundColor: '#ffffff', border: '1px solid #ddd' }
-                            }
-                            onClick={() => updateConfig({ theme: t.id, textColor: null })}
-                        >
-                            {isSelected && <Check size={16} className="swatch-check" />}
-                        </button>
-                      );
-                    })}
-                </div>
-            </div>
-
-            {/* Slider for Background Opacity / Atenuación */}
-            <div className="config-group">
-                <div className="slider-header">
-                  <label className="config-label"><Sliders size={16} /> Atenuación del Fondo</label>
-                  <span className="slider-value-badge">{Math.round(((config.bgOpacity ?? 20) / 60) * 100)}%</span>
-                </div>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="60" 
-                  step="5"
-                  value={config.bgOpacity ?? 20} 
-                  onChange={(e) => updateConfig({ bgOpacity: Number(e.target.value) })}
-                  className="bg-slider-input"
+        ) : (
+          <>
+            {activeTab === 'dashboard' && (
+              <div className="tab-view-container">
+                <StatsOverview
+                  stats={stats}
+                  activeStatus={filters.status}
+                  onSelectFilter={(status) => {
+                    filters.setStatus(status);
+                  }}
                 />
-                <div className="slider-hints">
-                  <span>Nitidez Total (0%)</span>
-                  <span>Atenuado (100%)</span>
-                </div>
-            </div>
+                <WeeklyView
+                  filteredActivities={filteredActivities}
+                  subjects={subjects}
+                  filters={filters}
+                  onToggleComplete={actions.toggleComplete}
+                  onEditActivity={handleOpenEditActivity}
+                  onDeleteActivity={actions.deleteActivity}
+                  onOpenAddActivity={() => handleOpenAddActivity()}
+                  selectedActivityId={selectedActivityId}
+                />
+              </div>
+            )}
 
-            {/* Font Color Swatches */}
-            <div className="config-group">
-                <label className="config-label"><Type size={16} /> Color de Letra / Títulos</label>
-                <div className="font-colors-grid">
-                    {FONT_COLORS.map(c => {
-                      const activeColor = config.textColor || (THEMES[config.theme] ? THEMES[config.theme].colors.primary : '#1a1a1a');
-                      const isSelected = activeColor.toLowerCase() === c.color.toLowerCase();
-                      return (
-                        <button 
-                            key={c.id}
-                            title={c.color}
-                            className={`font-color-btn ${isSelected ? 'active' : ''}`}
-                            style={{ backgroundColor: c.color }}
-                            onClick={() => updateConfig({ textColor: c.color })}
-                        >
-                            {isSelected && <Check size={14} style={{ color: c.color.toLowerCase() === '#ffffff' ? '#1a1a1a' : '#ffffff' }} />}
-                        </button>
-                      );
-                    })}
-                </div>
-            </div>
-            
-            <div className="config-group">
-                <label className="config-label"><Maximize size={16} /> Formato de Salida</label>
-                <div className="format-toggle">
-                  <button 
-                    className={`format-btn ${config.format === 'square' ? 'active' : ''}`}
-                    onClick={() => updateConfig({ format: 'square' })}
-                  >1:1 (Cuadrado)</button>
-                  <button 
-                    className={`format-btn ${config.format === 'story' ? 'active' : ''}`}
-                    onClick={() => updateConfig({ format: 'story' })}
-                  >9:16 (Historia)</button>
-                </div>
-            </div>
+            {activeTab === 'calendar' && (
+              <CalendarView
+                activities={activities}
+                subjects={subjects}
+                onSelectDateToAdd={(dateStr) => handleOpenAddActivity(dateStr)}
+                onEditActivity={handleOpenEditActivity}
+                onToggleComplete={actions.toggleComplete}
+                onActivityClick={handleActivityClickFromCalendar}
+              />
+            )}
 
-          </div>
-        </div>
+            {activeTab === 'upcoming' && (
+              <UpcomingView
+                activities={activities}
+                onToggleComplete={actions.toggleComplete}
+                onEditActivity={handleOpenEditActivity}
+                onDeleteActivity={actions.deleteActivity}
+                onOpenAddActivity={() => handleOpenAddActivity()}
+              />
+            )}
 
-        <div id="preview-section" className="preview-section">
-          <h2 className="section-title serif">Vista Previa</h2>
-          <MenuPreview />
-        </div>
+            {activeTab === 'subjects' && (
+              <SubjectManager
+                subjects={subjects}
+                activities={activities}
+                onOpenCreateSubject={handleOpenCreateSubject}
+                onEditSubject={handleOpenEditSubject}
+                onDeleteSubject={actions.deleteSubject}
+                onToggleStatus={handleToggleSubjectStatus}
+              />
+            )}
+
+            {activeTab === 'alerts' && (
+              <AlertsCenter
+                alerts={alerts}
+                preferences={preferences}
+                onSavePreferences={actions.savePreferences}
+                onToggleCompleteActivity={actions.toggleComplete}
+              />
+            )}
+          </>
+        )}
       </main>
 
-      <footer className="app-footer">
-        <p className="outfit">© 2026 Vianda Studio · Hecho para Mamá ❤️</p>
-      </footer>
+      {/* Modals */}
+      <ActivityModal
+        isOpen={isActivityModalOpen}
+        onClose={() => setIsActivityModalOpen(false)}
+        onSave={handleSaveActivity}
+        initialData={editingActivity}
+        subjects={subjects}
+        defaultDate={defaultActivityDate}
+      />
+
+      <SubjectModal
+        isOpen={isSubjectModalOpen}
+        onClose={() => setIsSubjectModalOpen(false)}
+        onSave={handleSaveSubject}
+        initialData={editingSubject}
+      />
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
     </div>
   );
-}
+};
 
 export default App;
