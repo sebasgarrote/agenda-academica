@@ -24,6 +24,58 @@ const setLocal = (key, data) => {
   }
 };
 
+export const migrateLocalDataToCloud = async (user) => {
+  if (!supabase || !user) throw new Error('Iniciá sesión para migrar tus datos.');
+
+  const migrationKey = `agenda_academica_cloud_migration_${user.id}`;
+  if (localStorage.getItem(migrationKey)) return { subjects: 0, activities: 0, skipped: true };
+  // Se establece antes de la primera llamada async para evitar duplicados en React StrictMode.
+  localStorage.setItem(migrationKey, 'in-progress');
+
+  const subjects = getLocal(SUBJECTS_KEY, []);
+  const activities = getLocal(ACTIVITIES_KEY, []);
+  const preferences = getLocal(PREFS_KEY, null);
+  if (!subjects.length && !activities.length) return { subjects: 0, activities: 0 };
+
+  // El respaldo local usa IDs de texto; Supabase usa UUID. Este mapa conserva
+  // correctamente la relación de cada actividad con su materia al migrar.
+  const subjectIdMap = new Map(subjects.map((subject) => [subject.id, crypto.randomUUID()]));
+  const subjectRows = subjects.map(({ id, user_id, ...subject }) => ({
+    ...subject,
+    id: subjectIdMap.get(id),
+    user_id: user.id
+  }));
+  const activityRows = activities.map(({ id, subject_id, user_id, ...activity }) => ({
+    ...activity,
+    id: crypto.randomUUID(),
+    subject_id: subjectIdMap.get(subject_id),
+    user_id: user.id,
+    updated_at: activity.updated_at || new Date().toISOString()
+  }));
+
+  if (activityRows.some((activity) => !activity.subject_id)) {
+    throw new Error('Hay actividades sin una materia válida; se canceló la migración.');
+  }
+
+  const { error: subjectsError } = await supabase.from('subjects').insert(subjectRows);
+  if (subjectsError) throw subjectsError;
+
+  const { error: activitiesError } = await supabase.from('activities').insert(activityRows);
+  if (activitiesError) throw activitiesError;
+
+  if (preferences) {
+    const { error: preferencesError } = await supabase.from('notification_preferences').upsert({
+      ...preferences,
+      user_id: user.id,
+      updated_at: new Date().toISOString()
+    });
+    if (preferencesError) throw preferencesError;
+  }
+
+  localStorage.setItem(migrationKey, 'completed');
+  return { subjects: subjectRows.length, activities: activityRows.length };
+};
+
 export const storageService = {
   // --- SUBJECTS ---
   async getSubjects(user = null) {
