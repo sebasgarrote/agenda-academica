@@ -42,7 +42,7 @@ export const PRESET_COLORS = [
   { name: 'Gris Grafito', hex: '#64748B' }
 ];
 
-export const SEMESTERS = ['Primer', 'Segundo', 'Anual', 'Verano'];
+export const SEMESTERS = ['Primer', 'Segundo'];
 
 // No hay datos académicos preinstalados. Cada cuenta comienza vacía.
 export const DEMO_SUBJECTS = [];
