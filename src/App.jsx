@@ -9,6 +9,7 @@ import WeeklyView from './components/dashboard/WeeklyView';
 import CalendarView from './components/calendar/CalendarView';
 import UpcomingView from './components/upcoming/UpcomingView';
 import SubjectManager from './components/subjects/SubjectManager';
+import ActivitiesImportView from './components/import/ActivitiesImportView';
 import AlertsCenter from './components/notifications/AlertsCenter';
 import ActivityModal from './components/modals/ActivityModal';
 import SubjectModal from './components/modals/SubjectModal';
@@ -241,6 +242,13 @@ const App = () => {
                 onEditSubject={handleOpenEditSubject}
                 onDeleteSubject={actions.deleteSubject}
                 onToggleStatus={handleToggleSubjectStatus}
+              />
+            )}
+
+            {activeTab === 'import' && (
+              <ActivitiesImportView
+                subjects={subjects}
+                onCreateActivity={actions.createActivity}
               />
             )}
 

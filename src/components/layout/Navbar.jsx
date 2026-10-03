@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Calendar, Clock, BookOpen, Bell, Plus } from 'lucide-react';
+import { LayoutDashboard, Calendar, Clock, BookOpen, Bell, Plus, FileUp } from 'lucide-react';
 
 const Navbar = ({ activeTab, setActiveTab, alertCount, onOpenAddActivity }) => {
   const navItems = [
@@ -7,6 +7,7 @@ const Navbar = ({ activeTab, setActiveTab, alertCount, onOpenAddActivity }) => {
     { id: 'calendar', label: 'Calendario', icon: Calendar },
     { id: 'upcoming', label: 'Próximamente', icon: Clock },
     { id: 'subjects', label: 'Materias', icon: BookOpen },
+    { id: 'import', label: 'Importar', icon: FileUp },
     { id: 'alerts', label: 'Alertas', icon: Bell, badge: alertCount }
   ];
 

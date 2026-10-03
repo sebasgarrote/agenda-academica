@@ -1737,6 +1737,24 @@
   padding: 24px;
 }
 
+/* Importación masiva */
+.import-activities-container { display: flex; flex-direction: column; gap: 18px; }
+.import-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.import-header h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; font-size: 1.3rem; }
+.import-header p, .import-hint { margin: 0; color: var(--text-muted); font-size: .9rem; line-height: 1.5; }
+.import-card { padding: 24px; }
+.upload-zone { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 170px; padding: 24px; border: 1px dashed rgba(59, 130, 246, .65); border-radius: var(--radius-md); color: var(--accent-primary); background: rgba(59, 130, 246, .07); text-align: center; cursor: pointer; }
+.upload-zone span { color: var(--text-main); font-weight: 600; }
+.upload-zone small { color: var(--text-muted); }
+.upload-zone input { display: none; }
+.import-ready, .import-errors { display: flex; gap: 10px; align-items: flex-start; margin-top: 16px; padding: 13px; border-radius: var(--radius-sm); font-size: .9rem; }
+.import-ready { color: #6ee7b7; background: rgba(16, 185, 129, .13); border: 1px solid rgba(16, 185, 129, .3); }
+.import-errors { color: #fca5a5; background: rgba(239, 68, 68, .13); border: 1px solid rgba(239, 68, 68, .3); }
+.import-errors div div { margin-top: 4px; }
+.import-actions { display: flex; justify-content: flex-end; margin-top: 20px; }
+.btn-primary:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
+@media (max-width: 640px) { .import-header { align-items: stretch; flex-direction: column; } .import-header .btn-secondary { width: 100%; } .import-card { padding: 16px; } }
+
 .auth-required-screen {
   background: var(--bg-primary, #0b1220);
 }
