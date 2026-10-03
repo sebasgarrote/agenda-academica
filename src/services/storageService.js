@@ -186,7 +186,7 @@ export const storageService = {
   async createActivity(activity, user = null) {
     const newActivity = {
       ...activity,
-      id: activity.id || (supabase ? undefined : `act-${Date.now()}`),
+      id: activity.id || crypto.randomUUID(),
       user_id: user ? user.id : 'local-user',
       status: activity.status || 'Pendiente',
       completed_at: activity.status === 'Finalizada' ? new Date().toISOString() : null,

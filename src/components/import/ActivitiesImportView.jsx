@@ -30,8 +30,8 @@ const ActivitiesImportView = ({ subjects, onCreateActivity }) => {
     const XLSX = await import('xlsx');
     const worksheet = XLSX.utils.aoa_to_sheet([
       HEADERS,
-      ['Foro Unidad 1', 'Foro', '2026-10-05', '2026-10-10', '23:59', 'Participación en el foro de la unidad 1', 'Pendiente'],
-      ['Trabajo práctico 1', 'Trabajo Práctico', '2026-10-06', '2026-10-17', '', 'Entrega individual', 'Pendiente']
+      ['Foro Unidad 1', 'Foro', '05-10-2026', '10-10-2026', '23:59', 'Participación en el foro de la unidad 1', 'Pendiente'],
+      ['Trabajo práctico 1', 'Trabajo Práctico', '06-10-2026', '17-10-2026', '', 'Entrega individual', 'Pendiente']
     ]);
     worksheet['!cols'] = [
       { wch: 32 }, { wch: 20 }, { wch: 18 }, { wch: 18 }, { wch: 15 }, { wch: 48 }, { wch: 16 }
@@ -60,7 +60,7 @@ const ActivitiesImportView = ({ subjects, onCreateActivity }) => {
         const startDate = normalizeDate(row['Fecha de inicio']) || dueDate;
         const dueTime = String(row['Hora límite'] || '').trim();
         if (!title) rowErrors.push(`Fila ${index + 2}: falta el título.`);
-        if (!dueDate) rowErrors.push(`Fila ${index + 2}: la fecha límite debe tener formato AAAA-MM-DD.`);
+        if (!dueDate) rowErrors.push(`Fila ${index + 2}: la fecha límite debe tener formato DD-MM-AAAA.`);
         if (dueTime && !/^\d{2}:\d{2}$/.test(dueTime)) rowErrors.push(`Fila ${index + 2}: la hora debe tener formato HH:MM.`);
         if (title && dueDate && (!dueTime || /^\d{2}:\d{2}$/.test(dueTime))) {
           parsed.push({
@@ -94,7 +94,8 @@ const ActivitiesImportView = ({ subjects, onCreateActivity }) => {
       if (inputRef.current) inputRef.current.value = '';
     } catch (error) {
       console.error('Error importing activities:', error);
-      setResult({ success: false, message: 'No se pudieron guardar todas las actividades. Revisá tu conexión e intentá nuevamente.' });
+      const isIdError = error?.message?.includes('column "id"');
+      setResult({ success: false, message: isIdError ? 'No se pudo generar el identificador interno de las actividades. Intentá nuevamente.' : 'No se pudieron guardar todas las actividades. Revisá tu conexión e intentá nuevamente.' });
     } finally {
       setIsImporting(false);
     }
@@ -124,7 +125,7 @@ const ActivitiesImportView = ({ subjects, onCreateActivity }) => {
       {result && <div className={result.success ? 'import-ready' : 'import-errors'}>{result.success ? <CheckCircle2 size={19} /> : <AlertTriangle size={18} />}<span>{result.success ? `Se importaron ${result.count} actividades correctamente.` : result.message}</span></div>}
       <div className="import-actions"><button className="btn-primary" disabled={!subjectId || !rows.length || errors.length || isImporting} onClick={importRows}>{isImporting ? 'Importando...' : `Importar ${rows.length || ''} actividades`}</button></div>
     </div>
-    <p className="import-hint">Columnas de la plantilla: Título, Tipo, Fecha de inicio, Fecha límite, Hora límite, Descripción y Estado. Las fechas se escriben como <strong>AAAA-MM-DD</strong>; si omitís la fecha de inicio, se usará la fecha límite.</p>
+    <p className="import-hint">Columnas de la plantilla: Título, Tipo, Fecha de inicio, Fecha límite, Hora límite, Descripción y Estado. Las fechas se escriben como <strong>DD-MM-AAAA</strong>; si omitís la fecha de inicio, se usará la fecha límite.</p>
   </div>;
 };
 
