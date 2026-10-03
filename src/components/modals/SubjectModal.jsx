@@ -38,21 +38,18 @@ const SubjectModal = ({ isOpen, onClose, onSave, initialData }) => {
       setErrorMsg('Por favor ingresá el nombre completo de la materia.');
       return;
     }
-    if (!shortName.trim()) {
-      setErrorMsg('Por favor ingresá un nombre corto / sigla.');
-      return;
-    }
-
-    onSave({
+    Promise.resolve(onSave({
       id: initialData?.id,
       name: name.trim(),
-      short_name: shortName.trim().toUpperCase(),
+      short_name: (shortName.trim() || name.trim().split(/\s+/).map((word) => word[0]).join('').slice(0, 10)).toUpperCase(),
       color,
       year: Number(year),
       semester,
       status
+    })).then(onClose).catch((error) => {
+      console.error('Error saving subject:', error);
+      setErrorMsg(error?.message || 'No se pudo guardar la materia. Intentá nuevamente.');
     });
-    onClose();
   };
 
   return (
@@ -92,7 +89,6 @@ const SubjectModal = ({ isOpen, onClose, onSave, initialData }) => {
                 value={shortName}
                 onChange={(e) => setShortName(e.target.value)}
                 maxLength={10}
-                required
               />
             </div>
 
