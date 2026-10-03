@@ -1747,6 +1747,7 @@
 .upload-zone span { color: var(--text-main); font-weight: 600; }
 .upload-zone small { color: var(--text-muted); }
 .upload-zone input { display: none; }
+.upload-zone.is-dragging { border-style: solid; border-color: var(--accent-primary); background: rgba(59, 130, 246, .16); transform: scale(1.01); }
 .import-ready, .import-errors { display: flex; gap: 10px; align-items: flex-start; margin-top: 16px; padding: 13px; border-radius: var(--radius-sm); font-size: .9rem; }
 .import-ready { color: #6ee7b7; background: rgba(16, 185, 129, .13); border: 1px solid rgba(16, 185, 129, .3); }
 .import-errors { color: #fca5a5; background: rgba(239, 68, 68, .13); border: 1px solid rgba(239, 68, 68, .3); }

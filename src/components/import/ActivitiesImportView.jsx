@@ -23,6 +23,7 @@ const ActivitiesImportView = ({ subjects, onCreateActivity }) => {
   const [rows, setRows] = useState([]);
   const [errors, setErrors] = useState([]);
   const [fileName, setFileName] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [result, setResult] = useState(null);
 
@@ -41,8 +42,7 @@ const ActivitiesImportView = ({ subjects, onCreateActivity }) => {
     XLSX.writeFile(workbook, 'plantilla-actividades-agenda.xlsx');
   };
 
-  const handleFile = async (event) => {
-    const file = event.target.files?.[0];
+  const processFile = async (file) => {
     if (!file) return;
     setResult(null);
     setFileName(file.name);
@@ -83,12 +83,14 @@ const ActivitiesImportView = ({ subjects, onCreateActivity }) => {
     }
   };
 
+  const handleFile = (event) => processFile(event.target.files?.[0]);
+
   const importRows = async () => {
     if (!subjectId || !rows.length || errors.length) return;
     setIsImporting(true);
     try {
       for (const row of rows) await onCreateActivity({ ...row, subject_id: subjectId });
-      setResult({ success: true, count: rows.length });
+      setResult({ success: true, count: rows.length, message: `Carga completada: se crearon ${rows.length} actividades.` });
       setRows([]);
       setFileName('');
       if (inputRef.current) inputRef.current.value = '';
@@ -114,7 +116,14 @@ const ActivitiesImportView = ({ subjects, onCreateActivity }) => {
         </select>
         {!subjects.length && <p className="import-hint">Primero creá una materia para poder importar sus actividades.</p>}
       </div>
-      <label className="upload-zone" htmlFor="activities-file">
+      <label
+        className={`upload-zone ${isDragging ? 'is-dragging' : ''}`}
+        htmlFor="activities-file"
+        onDragEnter={(event) => { event.preventDefault(); setIsDragging(true); }}
+        onDragOver={(event) => event.preventDefault()}
+        onDragLeave={(event) => { if (event.currentTarget === event.target) setIsDragging(false); }}
+        onDrop={(event) => { event.preventDefault(); setIsDragging(false); processFile(event.dataTransfer.files?.[0]); }}
+      >
         <Upload size={28} />
         <span>{fileName || 'Elegí o arrastrá tu archivo .xlsx'}</span>
         <small>Usá la plantilla descargada. Las columnas Título y Fecha límite son obligatorias.</small>
@@ -122,8 +131,8 @@ const ActivitiesImportView = ({ subjects, onCreateActivity }) => {
       </label>
       {errors.length > 0 && <div className="import-errors"><AlertTriangle size={18} /><div><strong>Corregí estas filas antes de importar:</strong>{errors.map((error) => <div key={error}>{error}</div>)}</div></div>}
       {rows.length > 0 && !errors.length && <div className="import-ready"><CheckCircle2 size={19} /><span>Se encontraron {rows.length} actividades listas para importar.</span></div>}
-      {result && <div className={result.success ? 'import-ready' : 'import-errors'}>{result.success ? <CheckCircle2 size={19} /> : <AlertTriangle size={18} />}<span>{result.success ? `Se importaron ${result.count} actividades correctamente.` : result.message}</span></div>}
-      <div className="import-actions"><button className="btn-primary" disabled={!subjectId || !rows.length || errors.length || isImporting} onClick={importRows}>{isImporting ? 'Importando...' : `Importar ${rows.length || ''} actividades`}</button></div>
+      {result && <div className={result.success ? 'import-ready' : 'import-errors'}>{result.success ? <CheckCircle2 size={19} /> : <AlertTriangle size={18} />}<span>{result.message}</span></div>}
+      <div className="import-actions"><button className="btn-primary" disabled={!subjectId || !rows.length || errors.length || isImporting} onClick={importRows}>{isImporting ? 'Creando...' : `Crear ${rows.length || ''} actividades`}</button></div>
     </div>
     <p className="import-hint">Columnas de la plantilla: Título, Tipo, Fecha de inicio, Fecha límite, Hora límite, Descripción y Estado. Las fechas se escriben como <strong>DD-MM-AAAA</strong>; si omitís la fecha de inicio, se usará la fecha límite.</p>
   </div>;
