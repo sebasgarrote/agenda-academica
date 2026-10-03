@@ -248,7 +248,9 @@ const App = () => {
             {activeTab === 'import' && (
               <ActivitiesImportView
                 subjects={subjects}
+                activities={activities}
                 onCreateActivity={actions.createActivity}
+                onMoveActivity={(activityId, subjectId) => actions.updateActivity({ id: activityId, subject_id: subjectId })}
               />
             )}
 
