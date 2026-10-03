@@ -99,10 +99,17 @@ export const storageService = {
   async createSubject(subject, user = null) {
     const newSubject = {
       ...subject,
-      id: subject.id || (supabase ? undefined : `subj-${Date.now()}`),
       user_id: user ? user.id : 'local-user',
       created_at: new Date().toISOString()
     };
+
+    // En Supabase el UUID lo genera PostgreSQL. No enviar `id: undefined`,
+    // ya que el cliente lo serializa como null e impide usar ese valor por defecto.
+    if (!supabase) {
+      newSubject.id = subject.id || `subj-${Date.now()}`;
+    } else if (subject.id) {
+      newSubject.id = subject.id;
+    }
 
     if (supabase && user) {
       const { data, error } = await supabase

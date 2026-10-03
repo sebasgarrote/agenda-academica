@@ -48,7 +48,12 @@ const SubjectModal = ({ isOpen, onClose, onSave, initialData }) => {
       status
     })).then(onClose).catch((error) => {
       console.error('Error saving subject:', error);
-      setErrorMsg(error?.message || 'No se pudo guardar la materia. Intentá nuevamente.');
+      const isIdError = error?.message?.includes('column "id"');
+      setErrorMsg(
+        isIdError
+          ? 'No se pudo generar el identificador de la materia. Intentá nuevamente.'
+          : 'No se pudo guardar la materia. Revisá la conexión e intentá nuevamente.'
+      );
     });
   };
 
