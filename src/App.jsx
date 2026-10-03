@@ -14,6 +14,7 @@ import AlertsCenter from './components/notifications/AlertsCenter';
 import ActivityModal from './components/modals/ActivityModal';
 import SubjectModal from './components/modals/SubjectModal';
 import AuthModal from './components/modals/AuthModal';
+import SubjectCompletionCelebration from './components/common/SubjectCompletionCelebration';
 import './App.css';
 
 const App = () => {
@@ -31,6 +32,7 @@ const App = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const [selectedActivityId, setSelectedActivityId] = useState(null);
+  const [celebratedSubject, setCelebratedSubject] = useState(null);
   const [localBackupCounts, setLocalBackupCounts] = useState(null);
 
   const handleClearLocalBackup = () => {
@@ -114,6 +116,25 @@ const App = () => {
     } else {
       await actions.createActivity(payload);
     }
+  };
+
+  const handleToggleComplete = async (activityId) => {
+    const activity = activities.find((item) => item.id === activityId);
+    if (!activity) return;
+
+    const updated = await actions.toggleComplete(activityId);
+    if (!updated || updated.status !== 'Finalizada') return;
+
+    const subjectActivities = activities.filter((item) => item.subject_id === activity.subject_id);
+    const completedAll = subjectActivities.length > 0 && subjectActivities.every(
+      (item) => item.id === activityId || item.status === 'Finalizada'
+    );
+    const subject = subjects.find((item) => item.id === activity.subject_id);
+    if (!completedAll || !subject || subject.status === 'finalizada') return;
+
+    await actions.updateSubject({ ...subject, status: 'finalizada' });
+    setCelebratedSubject(subject);
+    window.setTimeout(() => setCelebratedSubject(null), 4800);
   };
 
   // Handlers for Subject Modal
@@ -204,7 +225,7 @@ const App = () => {
                   filteredActivities={filteredActivities}
                   subjects={subjects}
                   filters={filters}
-                  onToggleComplete={actions.toggleComplete}
+                  onToggleComplete={handleToggleComplete}
                   onEditActivity={handleOpenEditActivity}
                   onDeleteActivity={actions.deleteActivity}
                   onOpenAddActivity={() => handleOpenAddActivity()}
@@ -219,7 +240,7 @@ const App = () => {
                 subjects={subjects}
                 onSelectDateToAdd={(dateStr) => handleOpenAddActivity(dateStr)}
                 onEditActivity={handleOpenEditActivity}
-                onToggleComplete={actions.toggleComplete}
+                onToggleComplete={handleToggleComplete}
                 onActivityClick={handleActivityClickFromCalendar}
               />
             )}
@@ -227,7 +248,7 @@ const App = () => {
             {activeTab === 'upcoming' && (
               <UpcomingView
                 activities={activities}
-                onToggleComplete={actions.toggleComplete}
+                onToggleComplete={handleToggleComplete}
                 onEditActivity={handleOpenEditActivity}
                 onDeleteActivity={actions.deleteActivity}
                 onOpenAddActivity={() => handleOpenAddActivity()}
@@ -259,7 +280,7 @@ const App = () => {
                 alerts={alerts}
                 preferences={preferences}
                 onSavePreferences={actions.savePreferences}
-                onToggleCompleteActivity={actions.toggleComplete}
+                onToggleCompleteActivity={handleToggleComplete}
               />
             )}
           </>
@@ -287,6 +308,7 @@ const App = () => {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
       />
+      <SubjectCompletionCelebration subject={celebratedSubject} />
     </div>
   );
 };

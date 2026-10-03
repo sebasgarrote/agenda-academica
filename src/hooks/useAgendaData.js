@@ -186,6 +186,7 @@ export const useAgendaData = () => {
           prev.map((a) => (a.id === activityId ? updated : a))
         );
       }
+      return updated;
     } catch (err) {
       console.error('Error toggling complete:', err);
     }
