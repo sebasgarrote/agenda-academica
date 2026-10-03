@@ -116,19 +116,22 @@ const ActivitiesImportView = ({ subjects, onCreateActivity }) => {
         </select>
         {!subjects.length && <p className="import-hint">Primero creá una materia para poder importar sus actividades.</p>}
       </div>
-      <label
+      <div
         className={`upload-zone ${isDragging ? 'is-dragging' : ''}`}
-        htmlFor="activities-file"
-        onDragEnter={(event) => { event.preventDefault(); setIsDragging(true); }}
-        onDragOver={(event) => event.preventDefault()}
-        onDragLeave={(event) => { if (event.currentTarget === event.target) setIsDragging(false); }}
-        onDrop={(event) => { event.preventDefault(); setIsDragging(false); processFile(event.dataTransfer.files?.[0]); }}
+        role="button"
+        tabIndex={0}
+        onClick={() => inputRef.current?.click()}
+        onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') inputRef.current?.click(); }}
+        onDragEnter={(event) => { event.preventDefault(); event.stopPropagation(); setIsDragging(true); }}
+        onDragOver={(event) => { event.preventDefault(); event.stopPropagation(); event.dataTransfer.dropEffect = 'copy'; }}
+        onDragLeave={(event) => { event.preventDefault(); event.stopPropagation(); setIsDragging(false); }}
+        onDrop={(event) => { event.preventDefault(); event.stopPropagation(); setIsDragging(false); processFile(event.dataTransfer.files?.[0]); }}
       >
         <Upload size={28} />
         <span>{fileName || 'Elegí o arrastrá tu archivo .xlsx'}</span>
         <small>Usá la plantilla descargada. Las columnas Título y Fecha límite son obligatorias.</small>
         <input ref={inputRef} id="activities-file" type="file" accept=".xlsx,.xls" onChange={handleFile} />
-      </label>
+      </div>
       {errors.length > 0 && <div className="import-errors"><AlertTriangle size={18} /><div><strong>Corregí estas filas antes de importar:</strong>{errors.map((error) => <div key={error}>{error}</div>)}</div></div>}
       {rows.length > 0 && !errors.length && <div className="import-ready"><CheckCircle2 size={19} /><span>Se encontraron {rows.length} actividades listas para importar.</span></div>}
       {result && <div className={result.success ? 'import-ready' : 'import-errors'}>{result.success ? <CheckCircle2 size={19} /> : <AlertTriangle size={18} />}<span>{result.message}</span></div>}
